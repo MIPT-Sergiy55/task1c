@@ -94,7 +94,7 @@ private:
     }
 
 
-    int iteration(std::bitset<MAX_SIZE>& infected, std::bitset<MAX_SIZE>& marked)
+    bool iteration(std::bitset<MAX_SIZE>& infected, std::bitset<MAX_SIZE>& marked)
     {
         //get a node from infected which is not marked
         std::bitset<MAX_SIZE> available = infected & marked.flip();
