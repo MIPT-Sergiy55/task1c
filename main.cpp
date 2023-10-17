@@ -9,6 +9,8 @@
 #include <bitset>
 #include <ctime>
 #include <chrono>
+#include <random>
+#include <iterator>
 
 class Graph {
     static const int MAX_SIZE = 10000;
@@ -66,7 +68,7 @@ public:
         {
             ans.push_back(i);
         }
-        for (int i = 0; i < 1000; ++i) {
+        for (int i = 0; i < 10000; ++i) {
             auto other = solve();
             if (other.size() < ans.size())
             {
@@ -94,35 +96,20 @@ private:
     }
 
 
-    bool iteration(std::bitset<MAX_SIZE>& infected, std::bitset<MAX_SIZE>& marked)
+    void iteration(std::bitset<MAX_SIZE>& infected, std::bitset<MAX_SIZE>& marked)
     {
-        //get a node from infected which is not marked
-        std::bitset<MAX_SIZE> available = infected & marked.flip();
-        int n = available.count();
-        int result = 0;
-        while(n > 0)
-        {
-            int k = std::rand() % n;
-            for (int i = 0; i < size; ++i)
-            {
-                if (available[i])
-                    --k;
-                if (k == -1)
-                {
-                    if (try_to_remove(infected, i))
-                    {
-                        infected[i] = false;
-                        ++result;
-                    } else {
-                        marked[i] = true;
-                    }
-                    available[i] = false;
-                    --n;
-                    break;
-                }
-            }
+        std::vector<int> cities(size);
+        for (int i = 0; i < size; ++i)
+            cities[i] = i;
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(cities.begin(), cities.end(), g);
+        for (int k: cities) {
+            if (marked[k])
+                continue;
+            if(try_to_remove(infected, k))
+                infected[k] = false;
         }
-        return false;
     }
 
     bool try_to_remove(std::bitset<MAX_SIZE>& infected, int index)
@@ -135,7 +122,6 @@ private:
 
 int main()
 {
-    std::srand(std::time(nullptr));
     int m, n = 0;
     std::cin >> m;
     std::vector<std::pair<int, int>> input_edges(m);
